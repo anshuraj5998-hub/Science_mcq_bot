@@ -2,21 +2,26 @@ import os
 import json
 import random
 import asyncio
+
 from telegram import Update
-from telegram.ext import Application, ChatMemberHandler, ContextTypes
+from telegram.ext import (
+    Application,
+    ChatMemberHandler,
+    ContextTypes,
+)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 GROUPS_FILE = "groups.json"
 
 questions = [
-    "🧪 Science Quiz\n\nQ. Human body ka sabse bada organ kaunsa hai?\n\nA) Liver\nB) Skin\nC) Heart\nD) Brain\n\n✅ Answer: B) Skin",
+    "🔬 Science Quiz\n\nHuman body ka sabse bada organ kaunsa hai?\n\nA) Liver\nB) Skin\nC) Heart\nD) Brain\n\n✅ Answer: B) Skin",
 
-    "⚛️ Physics Quiz\n\nQ. SI unit of Force?\n\nA) Joule\nB) Watt\nC) Newton\nD) Pascal\n\n✅ Answer: C) Newton",
+    "⚛️ Physics Quiz\n\nSI unit of Force?\n\nA) Joule\nB) Watt\nC) Newton\nD) Pascal\n\n✅ Answer: C) Newton",
 
-    "🧬 Biology Quiz\n\nQ. Blood ka red color kis wajah se hota hai?\n\nA) Chlorophyll\nB) Hemoglobin\nC) Plasma\nD) Platelets\n\n✅ Answer: B) Hemoglobin",
+    "🧬 Biology Quiz\n\nBlood ka red color kis wajah se hota hai?\n\nA) Chlorophyll\nB) Hemoglobin\nC) Plasma\nD) Platelets\n\n✅ Answer: B) Hemoglobin",
 
-    "🧪 Chemistry Quiz\n\nQ. Water ka chemical formula?\n\nA) CO2\nB) H2O\nC) O2\nD) NaCl\n\n✅ Answer: B) H2O"
+    "🧪 Chemistry Quiz\n\nWater ka chemical formula?\n\nA) CO2\nB) H2O\nC) O2\nD) NaCl\n\n✅ Answer: B) H2O"
 ]
 
 
@@ -55,7 +60,7 @@ async def send_quiz_loop(app):
                     text=random.choice(questions)
                 )
             except Exception as e:
-                print(e)
+                print(f"Error sending quiz: {e}")
 
         await asyncio.sleep(1800)  # 30 min
 
@@ -64,22 +69,24 @@ async def post_init(app):
     asyncio.create_task(send_quiz_loop(app))
 
 
-async def post_init(app):
-    asyncio.create_task(send_quiz_loop(app))
-
-app = (
-    Application.builder()
-    .token(BOT_TOKEN)
-    .post_init(post_init)
-    .build()
-)
-
-app.add_handler(
-    ChatMemberHandler(
-        track_groups,
-        ChatMemberHandler.MY_CHAT_MEMBER
+def main():
+    app = (
+        Application.builder()
+        .token(BOT_TOKEN)
+        .post_init(post_init)
+        .build()
     )
-)
 
-print("Bot Started...")
-app.run_polling()
+    app.add_handler(
+        ChatMemberHandler(
+            track_groups,
+            ChatMemberHandler.MY_CHAT_MEMBER
+        )
+    )
+
+    print("Bot Started...")
+    app.run_polling()
+
+
+if __name__ == "__main__":
+    main()
