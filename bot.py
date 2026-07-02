@@ -64,9 +64,22 @@ async def post_init(app):
     asyncio.create_task(send_quiz_loop(app))
 
 
-app = Application.builder().token(BOT_TOKEN).post_init(post_init).build()
+async def post_init(app):
+    asyncio.create_task(send_quiz_loop(app))
 
+app = (
+    Application.builder()
+    .token(BOT_TOKEN)
+    .post_init(post_init)
+    .build()
+)
 
+app.add_handler(
+    ChatMemberHandler(
+        track_groups,
+        ChatMemberHandler.MY_CHAT_MEMBER
+    )
+)
 
 print("Bot Started...")
 app.run_polling()
